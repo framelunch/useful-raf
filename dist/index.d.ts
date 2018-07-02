@@ -1,5 +1,6 @@
 declare type Animation = () => void;
 export interface IO {
+    isRunning(): boolean;
     start(): void;
     stop(): void;
 }

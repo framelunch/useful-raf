@@ -1,6 +1,7 @@
 type Animation = () => void;
 
 export interface IO {
+  isRunning(): boolean;
   start(): void;
   stop(): void;
 }
@@ -62,23 +63,26 @@ class RequestAnimationFrameFps implements IO {
   }
 
   getAnimation(animation: Animation): Animation {
-    const startTime = performance.now();
-    let lastFrame = 0;
+    const frameMillisecond = 1000 / this.options.fps;
+    let lastAnimatedTime = performance.now();
 
     return () => {
-      const timeDiff = performance.now() - startTime;
-      const frame = Math.ceil(timeDiff / (1000 / this.options.fps));
+      const currentTime = performance.now();
 
-      if (lastFrame < frame) {
+      if (currentTime - lastAnimatedTime >= frameMillisecond) {
         animation();
-        lastFrame = frame;
+        lastAnimatedTime = currentTime;
       }
       this.id = requestAnimationFrame(this.animation);
     };
   }
 
+  isRunning(): boolean {
+    return this.id != null;
+  }
+
   start() {
-    if (this.id) {
+    if (this.isRunning()) {
       throw new Error(`Animation still running! ID[${this.id}]`);
     }
 

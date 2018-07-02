@@ -4,6 +4,33 @@ var tslib_1 = require("tslib");
 var defaultOptions = {
     fps: 60,
 };
+if (!window.requestAnimationFrame) {
+    var lastAnimatedTime_1 = 0;
+    window.requestAnimationFrame =
+        window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            (function (callback) {
+                var currentTime = new Date().getTime();
+                var timeToCall = Math.max(0, 16 - (currentTime - lastAnimatedTime_1));
+                var id = setTimeout(function () { return callback(currentTime + timeToCall); }, timeToCall);
+                lastAnimatedTime_1 = currentTime + timeToCall;
+                return id;
+            });
+}
+if (!window.cancelAnimationFrame) {
+    window.cancelAnimationFrame =
+        window.webkitCancelAnimationFrame ||
+            window.webkitCancelRequestAnimationFrame ||
+            window.mozCancelAnimationFrame ||
+            window.mozCancelRequestAnimationFrame ||
+            window.msCancelAnimationFrame ||
+            window.msCancelRequestAnimationFrame ||
+            window.oCancelAnimationFrame ||
+            window.oCancelRequestAnimationFrame ||
+            (function (id) { return clearTimeout(id); });
+}
 var RequestAnimationFrameFps = (function () {
     function RequestAnimationFrameFps(animation, options) {
         this.id = null;
@@ -13,19 +40,22 @@ var RequestAnimationFrameFps = (function () {
     RequestAnimationFrameFps.prototype.getAnimation = function (animation) {
         var _this = this;
         var startTime = performance.now();
-        var lastFrame = 0;
+        var frameMillisecond = 1000 / this.options.fps;
+        var lastAnimatedTime = startTime;
         return function () {
-            var timeDiff = performance.now() - startTime;
-            var frame = Math.ceil(timeDiff / (1000 / _this.options.fps));
-            if (lastFrame < frame) {
+            var currentTime = performance.now();
+            if (currentTime - lastAnimatedTime >= frameMillisecond) {
                 animation();
-                lastFrame = frame;
+                lastAnimatedTime = currentTime;
             }
             _this.id = requestAnimationFrame(_this.animation);
         };
     };
+    RequestAnimationFrameFps.prototype.isRunning = function () {
+        return this.id != null;
+    };
     RequestAnimationFrameFps.prototype.start = function () {
-        if (this.id) {
+        if (this.isRunning()) {
             throw new Error("Animation still running! ID[" + this.id + "]");
         }
         this.id = requestAnimationFrame(this.animation);
