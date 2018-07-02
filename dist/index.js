@@ -34,19 +34,21 @@ if (!window.cancelAnimationFrame) {
 var RequestAnimationFrameFps = (function () {
     function RequestAnimationFrameFps(animation, options) {
         this.id = null;
+        this.currentFps = 0;
         this.options = options;
         this.animation = this.getAnimation(animation);
     }
     RequestAnimationFrameFps.prototype.getAnimation = function (animation) {
         var _this = this;
-        var startTime = performance.now();
         var frameMillisecond = 1000 / this.options.fps;
-        var lastAnimatedTime = startTime;
+        var lastAnimatedTime = performance.now();
         return function () {
             var currentTime = performance.now();
-            if (currentTime - lastAnimatedTime >= frameMillisecond) {
+            var timeDiff = currentTime - lastAnimatedTime;
+            if (_this.options.fps === defaultOptions.fps || timeDiff >= frameMillisecond) {
                 animation();
                 lastAnimatedTime = currentTime;
+                _this.currentFps = 1000 / timeDiff;
             }
             _this.id = requestAnimationFrame(_this.animation);
         };
@@ -56,13 +58,13 @@ var RequestAnimationFrameFps = (function () {
     };
     RequestAnimationFrameFps.prototype.start = function () {
         if (this.isRunning()) {
-            throw new Error("Animation still running! ID[" + this.id + "]");
+            throw new Error("Animation is still running! ID[" + this.id + "]");
         }
         this.id = requestAnimationFrame(this.animation);
     };
     RequestAnimationFrameFps.prototype.stop = function () {
         if (!this.id) {
-            throw new Error("Animation not running! ID[" + this.id + "]");
+            throw new Error('Animation is not running!');
         }
         cancelAnimationFrame(this.id);
         this.id = null;

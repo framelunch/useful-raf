@@ -1,5 +1,6 @@
 declare type Animation = () => void;
 export interface IO {
+    readonly currentFps: number;
     isRunning(): boolean;
     start(): void;
     stop(): void;

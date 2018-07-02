@@ -1,6 +1,7 @@
 type Animation = () => void;
 
 export interface IO {
+  readonly currentFps: number;
   isRunning(): boolean;
   start(): void;
   stop(): void;
@@ -54,6 +55,7 @@ if (!window.cancelAnimationFrame) {
 
 class RequestAnimationFrameFps implements IO {
   id: number | null = null;
+  currentFps = 0;
   animation: Animation;
   options: Options;
 
@@ -68,10 +70,12 @@ class RequestAnimationFrameFps implements IO {
 
     return () => {
       const currentTime = performance.now();
+      const timeDiff = currentTime - lastAnimatedTime;
 
-      if (currentTime - lastAnimatedTime >= frameMillisecond) {
+      if (this.options.fps === defaultOptions.fps || timeDiff >= frameMillisecond) {
         animation();
         lastAnimatedTime = currentTime;
+        this.currentFps = 1000 / timeDiff;
       }
       this.id = requestAnimationFrame(this.animation);
     };
