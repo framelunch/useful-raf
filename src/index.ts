@@ -83,7 +83,7 @@ class RequestAnimationFrameFps implements IO {
 
   start() {
     if (this.isRunning()) {
-      throw new Error(`Animation still running! ID[${this.id}]`);
+      throw new Error(`Animation is still running! ID[${this.id}]`);
     }
 
     this.id = requestAnimationFrame(this.animation);
@@ -91,7 +91,7 @@ class RequestAnimationFrameFps implements IO {
 
   stop() {
     if (!this.id) {
-      throw new Error(`Animation not running! ID[${this.id}]`);
+      throw new Error('Animation is not running!');
     }
 
     cancelAnimationFrame(this.id);
