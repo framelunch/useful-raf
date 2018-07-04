@@ -4,6 +4,11 @@
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "license": "MIT",
+    "author": "kaave <junkjunctions@gmail.com>",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:framelunch/useful-raf.git"
+    },
     "private": false,
     "scripts": {
         "precommit": "lint-staged",
