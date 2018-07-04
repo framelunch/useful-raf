@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-yarn add framelunch/useful-raf
+yarn add useful-raf
 ```
 
 ## How to use

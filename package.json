@@ -4,7 +4,7 @@
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "license": "MIT",
-    "private": true,
+    "private": false,
     "scripts": {
         "precommit": "lint-staged",
         "start": "cross-env NODE_ENV=development ts-node src/index.ts",
